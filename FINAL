@@ -1,0 +1,374 @@
+#define SIZE 5
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <thread>
+#include <chrono>
+#include <ctime>
+using namespace std;
+
+struct movie {
+    int  id;
+    char name[50];
+    char director[50];
+    char genre[20];
+    int year;
+    float rating;
+    char description[100];
+};
+
+void Show(const movie& mov) {
+    cout << "\n<-------------------------->";
+    cout << "\n" << "---> Name: " << mov.name << endl;
+    cout << "---> Director: " << mov.director << endl;
+    cout << "---> Genre: " << mov.genre << endl;
+    cout << "---> Year: " << mov.year << endl;
+    cout << "---> Rating: " << mov.rating << endl;
+    cout << "---> Description: " << mov.description << endl;
+    cout << "<-------------------------->\n\n";
+}
+
+void SearchByName(const movie films[], int size, const char* name) {
+    bool found = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (strcmp(films[i].name, name) == 0) {
+            Show(films[i]);
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "Film not found" << endl;
+    }
+}
+
+void SearchByDirector(const movie films[], int size, const char* director) {
+    bool found = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (strcmp(films[i].director, director) == 0) {
+            Show(films[i]);
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No films found directed by " << director << endl;
+    }
+    cin.ignore();
+}
+
+void SearchByGenre(const movie films[], int size, const char* genre) {
+    bool found = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (strcmp(films[i].genre, genre) == 0) {
+            Show(films[i]);
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No films found in the genre " << genre << endl;
+    }
+}
+
+void SearchByYear(const movie films[], int size, int year) {
+    bool found = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (films[i].year == year) {
+            Show(films[i]);
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No films found released in " << year << endl;
+    }
+}
+
+void ShowAll(const movie films[], int size) {
+    for (int i = 0; i < size; i++) {
+        Show(films[i]);
+    }
+}
+
+void TheMostPopular(const movie films[], int size) {
+    int index = -1;
+    int maxRating = films[0].rating;
+    for (int i = 0; i < size; i++)
+    {
+        if (films[i].rating > maxRating) {
+            maxRating = films[i].rating;
+            index = i;
+        }
+    }
+    if (index != -1) {
+        Show(films[index]);
+    }
+    else {
+        cout << "\n---> No films with best score";
+    }
+}
+
+void ChangeData(movie films[], int size, int id) {
+    bool found = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (films[i].id == id)
+        {
+            Show(films[i]);
+            cout << "Enter name: ";
+            cin >> films[i].name;
+            cout << "Enter director: ";
+            cin >> films[i].director;
+            cout << "Enter genre: ";
+            cin >> films[i].genre;
+            cout << "Enter year: ";
+            cin >> films[i].year;
+            cout << "Enter rating: ";
+            cin >> films[i].rating;
+            cout << "Enter description: ";
+            cin >> films[i].description;
+            cin.ignore();
+            found = true;
+            Show(films[i]);
+            break;
+        }
+    }
+    if (!found) {
+        cout << "Film to change not found";
+    }
+}
+
+void SaveToFile(const movie films[], int size, const char* filename) {
+    ofstream file(filename);
+    if (file.is_open())
+    {
+        for (int i = 0; i < size; i++)
+        {
+            file << films[i].id << endl;
+            file << films[i].name << endl;
+            file << films[i].director << endl;
+            file << films[i].genre << endl;
+            file << films[i].year << endl;
+            file << films[i].rating << endl;
+            file << films[i].description << endl;
+        }
+    }
+    else {
+        cerr << "Error opening file" << endl;
+        return;
+    }
+    file.close();
+}
+
+void LoadFromFile(movie films[], int& size, const char* filename, int max_size) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error opening file" << endl;
+        return;
+    }
+
+    size = 0;
+    while (size < SIZE && file >> films[size].id) {
+        file.ignore();
+        file.getline(films[size].name, 50);
+        file.getline(films[size].director, 50);
+        file.getline(films[size].genre, 20);
+        file >> films[size].year;
+        file >> films[size].rating;
+        file.ignore();
+        file.getline(films[size].description, 100);
+
+        cout << "\n<-------------------------->";
+        cout << "\nLoaded Film " << size + 1 << ":" << endl;
+        cout << "<-------------------------->\n";
+        cout << "ID: " << films[size].id << endl;
+        cout << "Name: " << films[size].name << endl;
+        cout << "Director: " << films[size].director << endl;
+        cout << "Genre: " << films[size].genre << endl;
+        cout << "Year: " << films[size].year << endl;
+        cout << "Rating: " << films[size].rating << endl;
+        cout << "Description: " << films[size].description << endl;
+        cout << "<-------------------------->\n";
+
+        size++;
+    }
+    file.close();
+}
+
+void ExitProgram() {
+    cout << "\n<------------------------->";
+    cout << "<--- Exiting the program. Goodbye! --->" << endl;
+    exit(0);
+}
+
+void SecretDancingCat() {
+    string fileNames[3] = { "C:\\Users\\Sad_ist\\Desktop\\ascii-art.txt", "C:\\Users\\Sad_ist\\Desktop\\ascii-art2.txt", "C:\\Users\\Sad_ist\\Desktop\\ascii-art3.txt" };
+
+    const int numFiles = 3;
+
+    for (int j = 0; j < 5; ++j) {
+        for (int i = 0; i < numFiles; ++i) {
+            ifstream file(fileNames[i]);
+
+            if (!file.is_open()) {
+                cerr << "Error opening file: " << fileNames[i] << endl;
+                return;
+            }
+
+            string catFrame;
+            getline(file, catFrame, '\0');
+
+            file.close();
+
+            cout << "\033[2J\033[1;1H";
+
+            cout << catFrame << endl;
+
+            this_thread::sleep_for(chrono::milliseconds(200));
+        }
+        reverse(begin(fileNames), end(fileNames));
+    }
+}
+
+string randomOption() {
+    srand(static_cast<unsigned int>(time(nullptr)));
+    string options[3] = { "12 but finish project", "11", "12" };
+
+    int randomNumber = rand() % 3;
+    return options[randomNumber];
+}
+
+int main()
+{
+    int choise;
+    int size = SIZE;
+    movie movies[SIZE] = {
+    {1, "Avatar","James Kameron", "Fantastic", 2009, 8.2, "Blue man runs on the tries"},
+    {2, "Green mile","Frank Durubond","Fantastic", 1999, 8.7, "About prison man"},
+    {3, "Gentlemans", "Guy Richi", "Comedy", 2019, 8.9, "Film about drugmens"},
+    {4, "Interstaller", "Christopher Nolan", "Scientific fantast", 2014, 9.2, "Film about man who was prison on the Mars"},
+    {5, "Fight club", "David Fitcher", "Drama", 1999, 9.0, "Film about ill man (shisophrenic)"}
+    };
+    do
+    {
+        cout << "<---------- Menu ---------->" << endl;
+        cout << "[1] - Search by name " << endl;
+        cout << "[2] - Search by director " << endl;
+        cout << "[3] - Search by genre " << endl;
+        cout << "[4] - Search by year " << endl;
+        cout << "[5] - The most popular " << endl;
+        cout << "[6] - Show all " << endl;
+        cout << "[7] - Change data " << endl;
+        cout << "[8] - Write to file " << endl;
+        cout << "[9] - Load from file " << endl;
+        cout << "[0] - Exit " << endl;
+        cout << "<-------------------------->";
+        cout << "\n---> Select your option: ";
+        cin >> choise;
+        cin.ignore();
+        switch (choise)
+        {
+        case 1:
+        {
+            char name[50];
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter name of film: ";
+            cin.getline(name, 50);
+            SearchByName(movies, SIZE, name);
+            break;
+        }
+        case 2:
+        {
+            char director[50];
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter director's name: ";
+            cin.getline(director, 50);
+            SearchByDirector(movies, SIZE, director);
+            break;
+        }
+        case 3:
+        {
+            char genre[20];
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter genre: ";
+            cin.getline(genre, 20);
+            SearchByGenre(movies, SIZE, genre);
+            break;
+        }
+        case 4:
+        {
+            int year;
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter year: ";
+            cin >> year;
+            cin.ignore();
+            SearchByYear(movies, SIZE, year);
+            break;
+        }
+        case 5:
+        {
+            cout << "\n<-------------------------->";
+            TheMostPopular(movies, SIZE);
+            break;
+        }
+        case 6:
+        {
+            cout << "\n<-------------------------->";
+            ShowAll(movies, SIZE);
+            break;
+        }
+        case 7:
+        {
+            int id;
+            cout << "\n<--------------------------->";
+            cout << "\n---> Enter id: ";
+            cin >> id;
+            cin.ignore();
+            ChangeData(movies, SIZE, id);
+            break;
+        }
+        case 8:
+        {
+            char filename[50];
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter name of your file: ";
+            cin.getline(filename, 50);
+            SaveToFile(movies, SIZE, filename);
+            break;
+        }
+        case 9:
+        {
+            movie movies[100];
+            int size;
+            char filename[50];
+
+            cout << "\n<-------------------------->";
+            cout << "\n---> Enter name of your file: ";
+            cin.getline(filename, 50);
+            LoadFromFile(movies, size, filename, SIZE);
+            break;
+        }
+        case 10:
+        {
+            cout << "\n<-------------------------->";
+            cout << "\n---> Randomly chosen option: " << randomOption() << endl;
+            return 0;
+        }
+        case 0:
+        {
+            ExitProgram();
+            break;
+        }
+        case 100:
+        {
+            SecretDancingCat();
+            break;
+        }
+
+        default:
+            cout << "Invalid";
+            break;
+        }
+    } while (true);
+}
